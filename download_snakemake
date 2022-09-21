@@ -1,18 +1,33 @@
-rule
-       mkdir -p ./test_data/
-       mkdir ./test_data//egg_data 
-       download_eggnog_data.py -y --data_dir ./test_data//egg_data/
+rule all: 
+   input:
+      "{}/kofam_data/".format(config["data_dir"]),
+      "{}/egg_data/".format(config["data_dir"])
 
+rule egg_down:
+   singularity: "docker://keithdt/prokfunannotate:latest"
+   output: "{}/egg_data/".format(config["data_dir"])
+   params: 
+      data_dir = config["data_dir"]
+   shell:
+       """
+       mkdir -p {params.data_dir}
+       mkdir {params.data_dir}/egg_data 
+       download_eggnog_data.py -y --data_dir {params.data_dir}/egg_data/
+       """
 
-
-rule
-       mkdir -p ./test_data/
-       mkdir ./test_data//kofam_data
-       cd ./test_data//kofam_data/
+rule kofam_down:
+   output: "{}/kofam_data/".format(config["data_dir"])
+   params: 
+      data_dir = config["data_dir"]
+   shell:
+       """
+       mkdir -p {params.data_dir}/
+       mkdir {params.data_dir}/kofam_data
+       cd {params.data_dir}/kofam_data/
        wget ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz
        wget ftp://ftp.genome.jp/pub/db/kofam/profiles.tar.gz
        gunzip ko_list.gz > ko_list
        tar xf profiles.tar.gz
        rm ko_list.gz
        rm profiles.tar.gz
-
+       """
