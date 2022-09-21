@@ -1,4 +1,4 @@
-cpus: 6
+cpus: 32
 temp_dir: "tmp/"
 genomes: "genome_list.tsv"
 outdir: "test-pfa-out"

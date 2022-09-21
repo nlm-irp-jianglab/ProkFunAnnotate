@@ -32,7 +32,7 @@ rule run_prokka:
       """
       mkdir -p outdir
       mkdir -p outdir/{wildcards.sample}
-      prokka --force --cpus {params.cpus} --prefix {wildcards.sample} --outdir {params.outdir}/{wildcards.sample}/ {input}
+      prokka --cpus {params.cpus} --prefix {wildcards.sample} --outdir {params.outdir}/{wildcards.sample}/ {input}
       """
 
 

@@ -1,0 +1,25 @@
+Download data used for eggnog_mapper and kofamscan: 
+
+download_snakemake: snakemake script to download data used for eggnog_mapper and kofamscan
+usage: 
+    script provided in download.sh 
+    snakemake script needs to be run with --use-singularity command line option
+    snakemake script also needs a configuration option provided through the --config 
+        command line argument. this configuration option should be in the format of
+        "data_dir={dir_path}" with {dir_path} being a path to the output directory. 
+    the script will make a directory specified through the data_dir option, and 
+        produce an egg_data and kofam_data directory within this data directory. 
+        these directories will be used by the PFA snakemake script to provide 
+        access to the data needed by the annotation programs. 
+
+
+annotate_snakemake: snakemake script to run the PFA annotation pipeline for list of genomes.
+usage: 
+    script provided in run_pfa.sh
+    snakemake script needs to br run with --use-singularity option
+    snakemake script needs a configuration file. example in config.yaml file. 
+    snakemake script also needs to have the data files downloaded in by the download_snakemake
+        script to be bound to the singularity image using the --singularity-args option
+        to specify the directories like this:
+	     "\-B ./data/egg_data/:/opt/egg_data/,./data/kofam_data:/opt/kofam_data/"
+        the data directories should be mounted to /opt/egg_data/ and /opt/kofam_data/

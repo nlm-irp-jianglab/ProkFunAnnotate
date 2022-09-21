@@ -5,4 +5,4 @@
 module load singularity
 module load snakemake
 
-snakemake -s download_snakemake --use-singularity --cores 4 --config "data_dir=test_data2"
+snakemake -s download_snakemake --use-singularity --cores 4 --config "data_dir=test_data3"
