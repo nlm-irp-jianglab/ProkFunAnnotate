@@ -23,3 +23,15 @@ usage:
         to specify the directories like this:
 	     "\-B ./data/egg_data/:/opt/egg_data/,./data/kofam_data:/opt/kofam_data/"
         the data directories should be mounted to /opt/egg_data/ and /opt/kofam_data/
+
+
+Quickstart:
+1. Set up data output directory in download.sh script and launch download job. 
+2. get list of genome fasta files (expecting them to be named *.fna) and prepare genome input list.
+File should be a single column list of paths to genome files. Genome files should not have their 
+suffixes in this file. 
+3. setup configuration file. set output directory, path to tmp directory, number of CPUS per subjob, 
+and path to the genome input list. 
+4. setup paths in run_pfa.sh script, set CPUs, and time appropriately. set paths for binding of
+data directory and set path to config in snakemake command. 
+5. launch run_pfa.sh. will produce a directory with one subdirectory per genome containing the annotation information. 

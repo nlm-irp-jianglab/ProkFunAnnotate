@@ -14,9 +14,9 @@ for line in open(config['genomes']).readlines():
 print(samples)
 rule all:
    input:
-      expand("{out}/{sample}/{sample}.gff", zip, sample=samples, out=[config["outdir"]]),
-      expand("{out}/{sample}/{sample}.emapper.annotations", zip, sample=samples, out=[config["outdir"]]),
-      expand("{out}/{sample}/{sample}.kofam.tsv", zip, sample=samples, out=[config["outdir"]]),
+      expand("{out}/{sample}/{sample}.gff", sample=samples, out=[config["outdir"]]),
+      expand("{out}/{sample}/{sample}.emapper.annotations", sample=samples, out=[config["outdir"]]),
+      expand("{out}/{sample}/{sample}.kofam.tsv", sample=samples, out=[config["outdir"]]),
       
 rule run_prokka: 
    singularity: "docker://keithdt/prokfunannotate:latest"
@@ -30,9 +30,8 @@ rule run_prokka:
       outdir  = "{}/".format(config["outdir"])
    shell:
       """
-      mkdir -p outdir
-      mkdir -p outdir/{wildcards.sample}
-      prokka --cpus {params.cpus} --prefix {wildcards.sample} --outdir {params.outdir}/{wildcards.sample}/ {input}
+      mkdir -p {params.outdir}
+      prokka --force --cpus {params.cpus} --prefix {wildcards.sample} --outdir {params.outdir}/{wildcards.sample}/ {input}
       """
 
 

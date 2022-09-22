@@ -1,4 +1,5 @@
-cpus: 32
+# number of cpus per subjob. should be a factor of total CPUs provided to jobs. 
+cpus: 8
 temp_dir: "tmp/"
 genomes: "genome_list.tsv"
-outdir: "test-pfa-out"
+outdir: "pfa-test-2"

@@ -5,7 +5,7 @@ rule all:
 
 rule egg_down:
    singularity: "docker://keithdt/prokfunannotate:latest"
-   output: "{}/egg_data/".format(config["data_dir"])
+   output: directory("{}/egg_data/".format(config["data_dir"]))
    params: 
       data_dir = config["data_dir"]
    shell:
@@ -16,7 +16,7 @@ rule egg_down:
        """
 
 rule kofam_down:
-   output: "{}/kofam_data/".format(config["data_dir"])
+   output: directory("{}/kofam_data/".format(config["data_dir"]))
    params: 
       data_dir = config["data_dir"]
    shell:
