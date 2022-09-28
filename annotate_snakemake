@@ -1,58 +1,51 @@
 samples = []
-samples_names = {}
-outnames = []
+dirs = []
 for line in open(config['genomes']).readlines(): 
-   ssplit = line.strip().split('/')
-   name = ssplit[-1]
-   samples.append(name)
-   path = "/".join(ssplit[:-1])+"/"
-   samples_names[name] = path
-   outnames.append("{}/{}".format(config["outdir"], name))
+   l = line.strip().split("\t")
+   samples.append(l[0])
+   dirs.append(l[1])
 
 
-
-print(samples)
 rule all:
    input:
-      expand("{out}/{sample}/{sample}.gff", sample=samples, out=[config["outdir"]]),
-      expand("{out}/{sample}/{sample}.emapper.annotations", sample=samples, out=[config["outdir"]]),
-      expand("{out}/{sample}/{sample}.kofam.tsv", sample=samples, out=[config["outdir"]]),
+      expand("{out}/{sample}.gff", zip, sample=samples, out=dirs),
+      expand("{out}/{sample}.emapper.annotations", zip, sample=samples, out=dirs),
+      expand("{out}/{sample}.kofam.tsv", zip, sample=samples, out=dirs),
       
 rule run_prokka: 
    singularity: "docker://keithdt/prokfunannotate:latest"
-   input: lambda wildcards: samples_names[wildcards.sample] + "{sample}.fna"
+   input: "{out}/{sample}.fna"
    output: 
-      config["outdir"]+"/"+"{sample}/{sample}.gff",
-      config["outdir"]+"/"+"{sample}/{sample}.faa"
-   params:
-      cpus    = config.get("cpus", "2"),
-      prefix  = lambda wildcards: samples_names[wildcards.sample],
-      outdir  = "{}/".format(config["outdir"])
+      "{out}/{sample}.gff",
+      "{out}/{sample}.faa"
+   threads: 8
+   resources:
+       mem_gb = 24
    shell:
       """
-      mkdir -p {params.outdir}
-      prokka --force --cpus {params.cpus} --prefix {wildcards.sample} --outdir {params.outdir}/{wildcards.sample}/ {input}
+      prokka --force --cpus {threads} --prefix {wildcards.sample} --outdir {wildcards.out}/{wildcards.sample}_prokka/ {input}
+      cp {wildcards.out}/{wildcards.sample}_prokka/{wildcards.sample}.gff {wildcards.out}/
+      cp {wildcards.out}/{wildcards.sample}_prokka/{wildcards.sample}.faa {wildcards.out}/
       """
 
 
 rule run_emapper:
    singularity: "docker://keithdt/prokfunannotate:latest"
-   input: config["outdir"] +"/"+ "{sample}/{sample}.faa"
-   output: config["outdir"]+"/"+"{sample}/{sample}.emapper.annotations"
-   params:
-      cpus    = config.get("cpus", "2"),
-      tmp     = config.get("temp_dir", "/tmp/"),
-      outdir  = "{}/".format(config["outdir"])
+   input: "{out}/{sample}.faa"
+   output: "{out}/{sample}.emapper.annotations"
+   threads: 8
+   resources:
+      mem_gb = 24
    shell:
-      "emapper.py -i {input} -o {params.outdir}/{wildcards.sample}/{wildcards.sample} --temp_dir {params.tmp}  --data_dir /opt/egg_data/ --cpu {params.cpus}"
+      "emapper.py -i {input} -o {wildcards.out}/{wildcards.sample} --temp_dir /tmp  --data_dir /opt/egg_data/ --cpu {threads}"
 
 rule run_kofamscan:
    singularity: "docker://keithdt/prokfunannotate:latest"
-   input: config["outdir"] +"/"+ "{sample}/{sample}.faa"
-   output: config["outdir"]+"/"+"{sample}/{sample}.kofam.tsv"
-   params:
-      cpus    = config.get("cpus", "2"),
-      tmp = config.get("temp_dir", "/tmp/")
+   input: "{out}/{sample}.faa"
+   output: "{out}/{sample}.kofam.tsv"
+   threads: 8
+   resources:
+      mem_gb = 24
    shell:
-      "exec_annotation --tmp-dir {params.tmp} -f detail-tsv -p /opt/kofam_data/profiles/ --ko-list /opt/kofam_data/ko_list --cpu {params.cpus} -o {output} {input}"
+      "exec_annotation --tmp-dir /tmp -f detail-tsv -p /opt/kofam_data/profiles/ --ko-list /opt/kofam_data/ko_list --cpu {threads} -o {output} {input}"
 
