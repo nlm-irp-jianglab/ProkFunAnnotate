@@ -14,7 +14,9 @@ rule all:
       
 rule run_prokka: 
    singularity: "docker://keithdt/prokfunannotate:latest"
-   input: "{out}/{sample}.fna"
+   input: 
+      fasta="{out}/{sample}.fasta",
+      genbank="{out}/{sample}.gb"
    output: 
       "{out}/{sample}.gff",
       "{out}/{sample}.faa"
@@ -23,7 +25,7 @@ rule run_prokka:
        mem_gb = 24
    shell:
       """
-      prokka --force --cpus {threads} --prefix {wildcards.sample} --outdir {wildcards.out}/{wildcards.sample}_prokka/ {input}
+      prokka --force --cpus {threads} --prefix {wildcards.sample} --outdir {wildcards.out}/{wildcards.sample}_prokka/ --proteins {input.genbank} {input.fasta}
       cp {wildcards.out}/{wildcards.sample}_prokka/{wildcards.sample}.gff {wildcards.out}/
       cp {wildcards.out}/{wildcards.sample}_prokka/{wildcards.sample}.faa {wildcards.out}/
       cp {wildcards.out}/{wildcards.sample}_prokka/{wildcards.sample}.tsv {wildcards.out}/{wildcards.sample}.prokka.tsv
