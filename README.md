@@ -1,7 +1,21 @@
+# ProkFunAnnotate
+
+ProkFunAnnotate is a snakemake pipeline designed to generate the annotation files that are used by the ProkFunFind search program (https://github.com/nlm-irp-jianglab/ProkFunFind). 
+
+ProkFunAnnotate can generate these annotations from a set of genome fasta files, or from a set of genbank + fasta files. 
+
+## ProkFunAnnotate Tutorial
+A tutorial showing how to run ProkFunAnnotate is available as part of the ProkFunFind documentation here: https://prokfunfind.readthedocs.io/en/latest/tutorial/7-pfa.html
+
+
+
+## Downaloading Annotation Databases
 Download data used for eggnog_mapper and kofamscan: 
 
 download_snakemake: snakemake script to download data used for eggnog_mapper and kofamscan
+
 usage: 
+
     script provided in download.sh 
     snakemake script needs to be run with --use-singularity command line option
     snakemake script also needs a configuration option provided through the --config 
@@ -12,9 +26,12 @@ usage:
         these directories will be used by the PFA snakemake script to provide 
         access to the data needed by the annotation programs. 
 
+## Annotating genomes using ProkFunAnnotate
 
 annotate_snakemake: snakemake script to run the PFA annotation pipeline for list of genomes.
-usage: 
+
+usage:
+
     script provided in run_pfa.sh
     snakemake script needs to be run with --use-singularity option
     snakemake script also needs to have the data files downloaded in by the download_snakemake
@@ -31,7 +48,9 @@ usage:
         path is also where the output will be generated for the annotation steps.  
 
 annotate_gb_snakemake: Snakemake script to run the PFA annotation pipeline for a list of genbank files. 
+
 Usage:
+
     script provided in run_pfa_gb.sh 
     Same as the annotate_snakemake pipeline, but the genome files provided consist of a contig 
     fasta file (extension '.fasta') and genbank file (extension '.gb') like those that can 
